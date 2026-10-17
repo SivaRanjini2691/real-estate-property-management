@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Full_Address__c</fullName>
+    <label>Full Address</label>
+    <type>Text</type>
+    <formula>Address__c &amp; ", " &amp; City__c &amp; ", " &amp; State__c &amp; " " &amp; Postal_Code__c &amp; ", " &amp; Country__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+</CustomField>
