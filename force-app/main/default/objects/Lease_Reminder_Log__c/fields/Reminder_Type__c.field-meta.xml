@@ -1,0 +1,14 @@
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reminder_Type__c</fullName>
+    <label>Reminder Type</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>30-Day</fullName><default>false</default><label>30-Day</label></value>
+            <value><fullName>1-Day</fullName><default>false</default><label>1-Day</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,511 @@
+<template>
+    <lightning-card
+        title="Lease Agreement Management"
+        icon-name="standard:contract">
+
+        <div class="slds-p-around_medium">
+
+            <!-- Search and filters -->
+            <div
+                class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-end slds-m-bottom_medium">
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input
+                        type="search"
+                        label="Search Lease Number"
+                        placeholder="Search by lease number"
+                        value={searchKey}
+                        onchange={handleSearchChange}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-combobox
+                        label="Filter by Status"
+                        value={leaseStatus}
+                        options={statusOptions}
+                        onchange={handleStatusFilterChange}>
+                    </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-button
+                        label="New Lease"
+                        variant="brand"
+                        icon-name="utility:add"
+                        onclick={handleNewLease}>
+                    </lightning-button>
+                </div>
+
+            </div>
+
+            <!-- Loading indicator -->
+            <template lwc:if={isLoading}>
+                <lightning-spinner
+                    alternative-text="Loading lease agreements"
+                    size="medium">
+                </lightning-spinner>
+            </template>
+
+            <!-- Lease table -->
+            <template lwc:if={hasLeases}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={leases}
+                    columns={columns}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <!-- Empty state -->
+            <template lwc:if={noLeasesFound}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <div class="slds-text-align_center">
+
+                        <lightning-icon
+                            icon-name="utility:contract"
+                            size="large"
+                            alternative-text="No lease agreements">
+                        </lightning-icon>
+
+                        <p class="slds-text-heading_small slds-m-top_medium">
+                            No lease agreements found
+                        </p>
+
+                        <p class="slds-text-body_regular slds-m-top_x-small">
+                            Create a lease agreement or change your filters.
+                        </p>
+
+                    </div>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+
+    <!-- New Lease Modal -->
+    <template lwc:if={showForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-modal="true"
+            aria-labelledby="lease-modal-heading"
+            class="slds-modal slds-fade-in-open">
+
+            <div class="slds-modal__container">
+
+                <!-- Modal header -->
+                <header class="slds-modal__header">
+
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="Close"
+                        title="Close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseForm}
+                        disabled={isSaving}>
+                    </lightning-button-icon>
+
+                    <h2
+                        id="lease-modal-heading"
+                        class="slds-text-heading_medium">
+                        Create Lease Agreement
+                    </h2>
+
+                    <p class="slds-text-body_small slds-m-top_x-small">
+                        Select a tenant and an available property to create
+                        the lease.
+                    </p>
+
+                </header>
+
+                <!-- Modal content -->
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <!-- ================================= -->
+                    <!-- TENANT SEARCH AND SELECTION       -->
+                    <!-- ================================= -->
+
+                    <div class="slds-form-element">
+
+                        <label class="slds-form-element__label">
+                            <abbr
+                                class="slds-required"
+                                title="required">*</abbr>
+                            Search Tenant
+                        </label>
+
+                        <div class="slds-form-element__control">
+
+                          <lightning-input
+    type="search"
+    variant="label-hidden"
+    label="Search Tenant"
+    placeholder="Enter tenant name"
+    value={tenantSearchKey}
+    onchange={handleTenantSearch}
+    disabled={isSaving}>
+</lightning-input>  
+
+                        </div>
+
+                        <!-- Selected tenant -->
+                        <template lwc:if={selectedTenantLabel}>
+                            <div
+                                class="slds-box slds-box_x-small slds-m-top_x-small">
+
+                                <div class="slds-grid slds-grid_vertical-align-center">
+
+                                    <div class="slds-col slds-grow">
+                                        <lightning-icon
+                                            icon-name="standard:contact"
+                                            size="small"
+                                            alternative-text="Selected tenant"
+                                            class="slds-m-right_small">
+                                        </lightning-icon>
+
+                                        <span class="slds-text-title_bold">
+                                            {selectedTenantLabel}
+                                        </span>
+                                    </div>
+
+                                    <div class="slds-col slds-no-flex">
+                                        <lightning-button-icon
+                                            icon-name="utility:close"
+                                            alternative-text="Clear selected tenant"
+                                            title="Clear tenant"
+                                            variant="bare"
+                                            data-field="tenant"
+                                            onclick={handleClearSelection}
+                                            disabled={isSaving}>
+                                        </lightning-button-icon>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </template>
+
+                        <!-- Tenant search loading -->
+                        <template lwc:if={isLoadingTenants}>
+                            <div class="slds-p-around_small">
+                                <lightning-spinner
+                                    alternative-text="Searching tenants"
+                                    size="small">
+                                </lightning-spinner>
+                            </div>
+                        </template>
+
+                        <!-- Tenant search results -->
+                        <template lwc:if={hasTenantOptions}>
+                            <div
+                                class="slds-dropdown slds-dropdown_fluid slds-dropdown_length-5"
+                                style="position:relative;">
+
+                                <ul
+                                    class="slds-listbox slds-listbox_vertical"
+                                    role="listbox">
+
+                                    <template
+                                        for:each={tenantOptions}
+                                        for:item="tenant">
+
+                                        <li
+                                            key={tenant.value}
+                                            class="slds-listbox__item"
+                                            role="presentation">
+
+                                            <button
+                                                type="button"
+                                                class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-p-around_small"
+                                                data-id={tenant.value}
+                                                onclick={handleTenantSelect}>
+
+                                                <span class="slds-media__figure">
+                                                    <lightning-icon
+                                                        icon-name="standard:contact"
+                                                        size="small"
+                                                        alternative-text="Tenant">
+                                                    </lightning-icon>
+                                                </span>
+
+                                                <span class="slds-media__body">
+
+                                                    <span
+                                                        class="slds-truncate slds-text-title_bold">
+                                                        {tenant.label}
+                                                    </span>
+
+                                                    <template lwc:if={tenant.description}>
+                                                        <span
+                                                            class="slds-truncate slds-text-body_small slds-text-color_weak">
+                                                            {tenant.description}
+                                                        </span>
+                                                    </template>
+
+                                                </span>
+
+                                            </button>
+
+                                        </li>
+
+                                    </template>
+
+                                </ul>
+                            </div>
+                        </template>
+
+                        <!-- No tenants found -->
+                        <template lwc:if={noTenantOptionsFound}>
+                            <p class="slds-text-color_weak slds-p-around_small">
+                                No tenants found. Try another name.
+                            </p>
+                        </template>
+
+                    </div>
+
+                    <!-- ================================= -->
+                    <!-- PROPERTY SEARCH AND SELECTION    -->
+                    <!-- ================================= -->
+
+                    <div class="slds-form-element slds-m-top_large">
+
+                        <label class="slds-form-element__label">
+                            <abbr
+                                class="slds-required"
+                                title="required">*</abbr>
+                            Search Property
+                        </label>
+
+                        <div class="slds-form-element__control">
+
+                            <lightning-input
+    type="search"
+    variant="label-hidden"
+    label="Search Property"
+    placeholder="Enter property name"
+    value={propertySearchKey}
+    onchange={handlePropertySearch}
+    disabled={isSaving}>
+</lightning-input>
+
+                        </div>
+
+                        <!-- Selected property -->
+                        <template lwc:if={selectedPropertyLabel}>
+                            <div
+                                class="slds-box slds-box_x-small slds-m-top_x-small">
+
+                                <div class="slds-grid slds-grid_vertical-align-center">
+
+                                    <div class="slds-col slds-grow">
+                                        <lightning-icon
+                                            icon-name="standard:household"
+                                            size="small"
+                                            alternative-text="Selected property"
+                                            class="slds-m-right_small">
+                                        </lightning-icon>
+
+                                        <span class="slds-text-title_bold">
+                                            {selectedPropertyLabel}
+                                        </span>
+                                    </div>
+
+                                    <div class="slds-col slds-no-flex">
+                                        <lightning-button-icon
+                                            icon-name="utility:close"
+                                            alternative-text="Clear selected property"
+                                            title="Clear property"
+                                            variant="bare"
+                                            data-field="property"
+                                            onclick={handleClearSelection}
+                                            disabled={isSaving}>
+                                        </lightning-button-icon>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </template>
+
+                        <!-- Property search loading -->
+                        <template lwc:if={isLoadingProperties}>
+                            <div class="slds-p-around_small">
+                                <lightning-spinner
+                                    alternative-text="Searching properties"
+                                    size="small">
+                                </lightning-spinner>
+                            </div>
+                        </template>
+
+                        <!-- Property search results -->
+                        <template lwc:if={hasPropertyOptions}>
+                            <div
+                                class="slds-dropdown slds-dropdown_fluid slds-dropdown_length-5"
+                                style="position:relative;">
+
+                                <ul
+                                    class="slds-listbox slds-listbox_vertical"
+                                    role="listbox">
+
+                                    <template
+                                        for:each={propertyOptions}
+                                        for:item="property">
+
+                                        <li
+                                            key={property.value}
+                                            class="slds-listbox__item"
+                                            role="presentation">
+
+                                            <button
+                                                type="button"
+                                                class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-p-around_small"
+                                                data-id={property.value}
+                                                onclick={handlePropertySelect}>
+
+                                                <span class="slds-media__figure">
+                                                    <lightning-icon
+                                                        icon-name="standard:household"
+                                                        size="small"
+                                                        alternative-text="Property">
+                                                    </lightning-icon>
+                                                </span>
+
+                                                <span class="slds-media__body">
+
+                                                    <span
+                                                        class="slds-truncate slds-text-title_bold">
+                                                        {property.label}
+                                                    </span>
+
+                                                    <span
+                                                        class="slds-truncate slds-text-body_small slds-text-color_weak">
+                                                        {property.description}
+                                                    </span>
+
+                                                </span>
+
+                                            </button>
+
+                                        </li>
+
+                                    </template>
+
+                                </ul>
+                            </div>
+                        </template>
+
+                        <!-- No properties found -->
+                        <template lwc:if={noPropertyOptionsFound}>
+                            <p class="slds-text-color_weak slds-p-around_small">
+                                No properties found. Try another name.
+                            </p>
+                        </template>
+
+                    </div>
+
+                    <!-- ================================= -->
+                    <!-- AGREED MONTHLY RENT               -->
+                    <!-- ================================= -->
+
+                    <lightning-input
+                        class="lease-input slds-m-top_large"
+                        type="number"
+                        name="agreedMonthlyRent"
+                        label="Agreed Monthly Rent (₹)"
+                        value={agreedMonthlyRent}
+                        min="0.01"
+                        step="0.01"
+                        onchange={handleInputChange}
+                        disabled={isSaving}
+                        required>
+                    </lightning-input>
+
+                    <!-- ================================= -->
+                    <!-- LEASE START DATE                  -->
+                    <!-- ================================= -->
+
+                    <lightning-input
+                        class="lease-input slds-m-top_medium"
+                        type="date"
+                        name="startDate"
+                        label="Lease Start Date"
+                        value={startDate}
+                        onchange={handleInputChange}
+                        disabled={isSaving}
+                        required>
+                    </lightning-input>
+
+                    <!-- ================================= -->
+                    <!-- LEASE END DATE                    -->
+                    <!-- ================================= -->
+
+                    <lightning-input
+                        class="lease-input slds-m-top_medium"
+                        type="date"
+                        name="endDate"
+                        label="Lease End Date"
+                        value={endDate}
+                        onchange={handleInputChange}
+                        disabled={isSaving}
+                        required>
+                    </lightning-input>
+
+                    <!-- ================================= -->
+                    <!-- LEASE TERMS                       -->
+                    <!-- ================================= -->
+
+                    <lightning-textarea
+                        class="lease-input slds-m-top_medium"
+                        name="leaseTerms"
+                        label="Lease Terms"
+                        value={leaseTerms}
+                        onchange={handleInputChange}
+                        disabled={isSaving}
+                        required>
+                    </lightning-textarea>
+
+                    <!-- ================================= -->
+                    <!-- LEASE STATUS                      -->
+                    <!-- ================================= -->
+
+                    <lightning-combobox
+                        class="lease-input slds-m-top_medium"
+                        name="formStatus"
+                        label="Lease Status"
+                        value={formStatus}
+                        options={formStatusOptions}
+                        onchange={handleInputChange}
+                        disabled={isSaving}
+                        required>
+                    </lightning-combobox>
+
+                </div>
+
+                <!-- Modal footer -->
+                <footer class="slds-modal__footer">
+
+                    <lightning-button
+                        label="Cancel"
+                        variant="neutral"
+                        onclick={handleCloseForm}
+                        disabled={isSaving}>
+                    </lightning-button>
+
+                    <lightning-button
+                        label="Save Lease"
+                        variant="brand"
+                        class="slds-m-left_small"
+                        onclick={handleSaveLease}
+                        disabled={saveDisabled}>
+                    </lightning-button>
+
+                </footer>
+
+            </div>
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

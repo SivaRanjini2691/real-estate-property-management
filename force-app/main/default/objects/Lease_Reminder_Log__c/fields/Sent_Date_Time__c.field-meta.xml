@@ -1,0 +1,5 @@
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sent_Date_Time__c</fullName>
+    <label>Sent Date Time</label>
+    <type>DateTime</type>
+</CustomField>

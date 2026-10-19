@@ -1,0 +1,10 @@
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lease_Agreement__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Lease Agreement</label>
+    <referenceTo>Lease_Agreement__c</referenceTo>
+    <relationshipLabel>Reminder Logs</relationshipLabel>
+    <relationshipName>Reminder_Logs</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,155 @@
+<template>
+    <lightning-card
+        title="Tenant Management"
+        icon-name="standard:contact">
+
+        <div class="slds-p-around_medium">
+
+            <!-- Header actions -->
+            <div class="slds-grid slds-wrap slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3">
+                    <lightning-input
+                        type="search"
+                        label="Search Tenants"
+                        placeholder="Search by name, email, or phone"
+                        value={searchKey}
+                        onchange={handleSearchChange}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-m-top_medium">
+                    <lightning-button
+                        label="New Tenant"
+                        variant="brand"
+                        icon-name="utility:add"
+                        onclick={handleNewTenant}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <!-- Loading spinner -->
+            <template lwc:if={isLoading}>
+                <lightning-spinner
+                    alternative-text="Loading tenants"
+                    size="medium">
+                </lightning-spinner>
+            </template>
+
+            <!-- Tenant table -->
+            <template lwc:if={hasTenants}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={tenants}
+                    columns={columns}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <!-- Empty state -->
+            <template lwc:if={noTenantsFound}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <div class="slds-text-align_center">
+                        <lightning-icon
+                            icon-name="utility:people"
+                            size="large"
+                            alternative-text="No tenants">
+                        </lightning-icon>
+
+                        <p class="slds-text-heading_small slds-m-top_medium">
+                            No tenants found
+                        </p>
+
+                        <p class="slds-text-body_regular slds-m-top_x-small">
+                            Create a tenant or change your search.
+                        </p>
+                    </div>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+
+    <!-- New Tenant Modal -->
+    <template lwc:if={showNewTenantForm}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-modal="true"
+            aria-labelledby="tenant-modal-heading"
+            class="slds-modal slds-fade-in-open">
+
+            <div class="slds-modal__container">
+
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="Close"
+                        title="Close"
+                        variant="bare"
+                        class="slds-modal__close"
+                        onclick={handleCloseForm}
+                        disabled={isSaving}>
+                    </lightning-button-icon>
+
+                    <h2
+                        id="tenant-modal-heading"
+                        class="slds-text-heading_medium">
+                        Create New Tenant
+                    </h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <lightning-input
+                        class="tenant-input"
+                        name="tenantName"
+                        label="Tenant Name"
+                        value={tenantName}
+                        onchange={handleInputChange}
+                        required>
+                    </lightning-input>
+
+                    <lightning-input
+                        class="tenant-input slds-m-top_medium"
+                        name="emailAddress"
+                        label="Email"
+                        type="email"
+                        value={emailAddress}
+                        onchange={handleInputChange}
+                        required>
+                    </lightning-input>
+
+                    <lightning-input
+                        class="tenant-input slds-m-top_medium"
+                        name="phoneNumber"
+                        label="Phone"
+                        type="tel"
+                        value={phoneNumber}
+                        onchange={handleInputChange}>
+                    </lightning-input>
+
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        label="Cancel"
+                        variant="neutral"
+                        onclick={handleCloseForm}
+                        disabled={isSaving}>
+                    </lightning-button>
+
+                    <lightning-button
+                        label="Save Tenant"
+                        variant="brand"
+                        class="slds-m-left_small"
+                        onclick={handleSaveTenant}
+                        disabled={isSaveDisabled}>
+                    </lightning-button>
+                </footer>
+
+            </div>
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

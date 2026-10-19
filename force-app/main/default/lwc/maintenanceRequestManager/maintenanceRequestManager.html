@@ -1,0 +1,159 @@
+﻿<template>
+    <lightning-card
+        title="Maintenance Request Management"
+        icon-name="standard:service_appointment">
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <div class="summary-section slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="summary-card">
+                        <span class="summary-label">Total Requests</span>
+                        <span class="summary-value">{totalRequests}</span>
+                    </div>
+                </div>
+
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="summary-card">
+                        <span class="summary-label">Open</span>
+                        <span class="summary-value">{openRequests}</span>
+                    </div>
+                </div>
+
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="summary-card">
+                        <span class="summary-label">In Progress</span>
+                        <span class="summary-value">{inProgressRequests}</span>
+                    </div>
+                </div>
+
+                <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="summary-card">
+                        <span class="summary-label">Completed</span>
+                        <span class="summary-value">{completedRequests}</span>
+                    </div>
+                </div>
+            </div>
+
+            <lightning-accordion
+                allow-multiple-sections-open
+                active-section-name="create">
+
+                <lightning-accordion-section
+                    name="create"
+                    label="Create Maintenance Request">
+
+                    <div class="slds-grid slds-wrap slds-gutters">
+
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                            <lightning-record-picker
+                                label="Select Property"
+                                placeholder="Search properties..."
+                                object-api-name="Property__c"
+                                value={selectedPropertyId}
+                                onchange={handlePropertyChange}
+                                required>
+                            </lightning-record-picker>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                            <lightning-textarea
+                                label="Maintenance Description"
+                                value={description}
+                                onchange={handleDescriptionChange}
+                                placeholder="Describe the maintenance issue..."
+                                max-length="32000"
+                                required>
+                            </lightning-textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="slds-m-top_medium">
+                        <lightning-button
+                            label="Create Request"
+                            variant="brand"
+                            icon-name="utility:add"
+                            onclick={handleCreateRequest}
+                            disabled={isBusy}>
+                        </lightning-button>
+                    </div>
+
+                    <template lwc:if={isCreating}>
+                        <div class="slds-m-top_medium">
+                            <lightning-spinner
+                                alternative-text="Creating maintenance request"
+                                size="small">
+                            </lightning-spinner>
+                        </div>
+                    </template>
+
+                </lightning-accordion-section>
+            </lightning-accordion>
+
+            <div class="slds-grid slds-wrap slds-grid_vertical-align-end slds-m-top_large slds-m-bottom_medium">
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                    <lightning-combobox
+                        name="statusFilter"
+                        label="Filter by Status"
+                        value={statusFilter}
+                        options={filterOptions}
+                        onchange={handleFilterChange}>
+                    </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-3 slds-text-align_right slds-m-top_small">
+                    <lightning-button
+                        label="Refresh"
+                        icon-name="utility:refresh"
+                        onclick={handleRefresh}
+                        disabled={isBusy}>
+                    </lightning-button>
+                </div>
+
+            </div>
+
+            <template lwc:if={isLoading}>
+                <lightning-spinner
+                    alternative-text="Loading maintenance requests"
+                    size="medium">
+                </lightning-spinner>
+            </template>
+
+            <template lwc:if={hasRequests}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={requests}
+                    columns={columns}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <template lwc:if={showEmptyState}>
+                <div class="empty-state slds-p-around_large slds-text-align_center">
+                    <lightning-icon
+                        icon-name="utility:info"
+                        size="medium"
+                        alternative-text="Information">
+                    </lightning-icon>
+
+                    <p class="slds-m-top_small">
+                        No maintenance requests found for this filter.
+                    </p>
+                </div>
+            </template>
+
+            <template lwc:if={isUpdating}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner
+                        alternative-text="Updating maintenance status"
+                        size="small">
+                    </lightning-spinner>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

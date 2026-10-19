@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <label>Lease Reminder Log</label>
+    <nameField>
+        <label>Lease Reminder Log Name</label>
+        <type>AutoNumber</type>
+        <displayFormat>LRL-{00000}</displayFormat>
+    </nameField>
+    <pluralLabel>Lease Reminder Logs</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

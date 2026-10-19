@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Temporary staging records for property image uploads.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <label>Property Image Staging</label>
+    <nameField>
+        <displayFormat>PIS-{00000}</displayFormat>
+        <label>Staging Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Property Image Stagings</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

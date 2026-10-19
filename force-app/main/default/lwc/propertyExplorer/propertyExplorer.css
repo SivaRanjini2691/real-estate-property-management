@@ -1,0 +1,153 @@
+.property-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.property-card {
+    overflow: hidden;
+    border: 1px solid #dddbda;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.property-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+    transform: translateY(-2px);
+}
+
+.property-image-container {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: #f3f3f3;
+}
+
+.property-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    color: #706e6b;
+    background: #f3f3f3;
+}
+
+.image-fallback-hidden {
+    display: none;
+}
+
+.status-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.status-available {
+    color: #194e31;
+    background: #d9f2e3;
+}
+
+.status-occupied {
+    color: #7a1d1d;
+    background: #fde2e2;
+}
+
+.property-details {
+    padding: 1rem;
+}
+
+.property-name {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.property-location {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+    color: #706e6b;
+    font-size: 0.875rem;
+}
+
+.property-type {
+    color: #444;
+    font-size: 0.85rem;
+}
+
+.property-card-footer {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+}
+
+.rent-label {
+    color: #706e6b;
+    font-size: 0.75rem;
+}
+
+.property-rent {
+    margin-top: 0.15rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.property-description {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 0.75rem;
+    color: #706e6b;
+    font-size: 0.85rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.pagination-label {
+    font-size: 0.875rem;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem;
+    color: #706e6b;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .property-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .property-image-container {
+        height: 180px;
+    }
+}

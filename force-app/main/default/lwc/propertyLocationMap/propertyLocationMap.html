@@ -1,0 +1,48 @@
+<template>
+    <lightning-card
+        title="Property Location"
+        icon-name="utility:location">
+
+        <div class="slds-p-around_medium">
+            <template lwc:if={errorMessage}>
+                <div class="slds-text-color_error" role="alert">
+                    {errorMessage}
+                </div>
+            </template>
+
+            <template lwc:if={property}>
+                <h2 class="slds-text-heading_small">
+                    {propertyName}
+                </h2>
+
+                <p class="slds-text-body_regular slds-m-top_x-small">
+                    {address}
+                </p>
+
+                <template lwc:if={hasCoordinates}>
+                    <div class="slds-m-top_medium">
+                        <lightning-map
+                            map-markers={mapMarkers}
+                            zoom-level="15"
+                            list-view="hidden">
+                        </lightning-map>
+                    </div>
+                </template>
+
+                <template lwc:else>
+                    <div class="slds-box slds-m-top_medium">
+                        <lightning-icon
+                            icon-name="utility:warning"
+                            size="small"
+                            alternative-text="Coordinates unavailable"
+                            class="slds-m-right_small">
+                        </lightning-icon>
+
+                        Coordinates are not available for this property.
+                        Geocode the address before displaying its map.
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>
